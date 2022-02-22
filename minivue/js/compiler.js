@@ -58,10 +58,24 @@ class Compiler {
     }
 
     update (node, key, attrName) {
-        let updateFn = this[attrName + 'Updater']
+
+        let trueAttrName = attrName
+        let eventType = ''
+        let value = this.vm[key]
+        if (attrName.startsWith('on:')) {
+            const splitArray = attrName.split(':')
+            trueAttrName = splitArray[0]
+
+            eventType = attrName.split(':')[1]
+
+            // 点击事件一般放在methods里面
+            value = value || this.vm.$options.methods[key]
+        }
+
+        let updateFn = this[trueAttrName + 'Updater']
         // 使用call知道this对象
-        updateFn && updateFn.call(this, node, this.vm[key], key)
-      }
+        updateFn && updateFn.call(this, node, value, key, eventType)
+    }
     
     // 处理 v-text 指令
     textUpdater (node, value, key) {
@@ -70,6 +84,25 @@ class Compiler {
 
         new Watcher(this.vm, key, (newValue) => {
           node.textContent = newValue
+        })
+    }
+
+    // 处理 v-html 指令
+    htmlUpdater (node, value, key) {
+        // 设置text
+        node.innerHTML = value
+
+        new Watcher(this.vm, key, (newValue) => {
+            node.innerHTML = newValue
+        })
+    }
+    // 处理 v-on 指令
+    onUpdater (node, value, key, eventType) {
+        node.addEventListener(eventType, value)
+        // 重新设置
+        new Watcher(this.vm, key, newValue => {
+            node.removeEventListener(eventType, value)
+            node.addEventListener(eventType, newValue)
         })
     }
 

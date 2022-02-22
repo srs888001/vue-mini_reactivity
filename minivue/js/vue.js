@@ -1,5 +1,3 @@
-// import Observer from './observer'
-
 class Vue {
     constructor(options) {
         // 1. 通过属性保存选项的数据

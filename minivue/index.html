@@ -13,6 +13,8 @@
     <h3>{{ count }}</h3>
     <h1>v-text</h1>
     <div v-text="msg"></div>
+    <p v-html="htmlmsg"></p>
+    <div v-on:click="onClick">点击</div>
     <h1>v-model</h1>
     <input type="text" v-model="msg">
     <input type="text" v-model="count">
@@ -28,7 +30,13 @@
       data: {
         msg: 'Hello Vue',
         count: 100,
+        htmlmsg: '<span style="color:#f00">Hell World!</span>',
         person: { name: 'zs' }
+      },
+      methods: {
+        onClick: function (event) {
+          console.log('点击了')
+      }
       }
     })
     console.log(vm.msg)
